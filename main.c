@@ -166,6 +166,9 @@ void runYear(struct movie *list)
 	int yearExists = 0; //counter to see if we have information on any movies from that year
 	while (list != NULL)
 	{
+		/****
+		 * Check to see if the input year is actually in the list]
+		 * ***/
 		if (list->year == input)
 		{
 			printf("%s\n", list->title);
@@ -174,6 +177,9 @@ void runYear(struct movie *list)
 		list = list->next;
 	}
 
+	/**
+	 * If the year input is not int the list then print this
+	 * */
 	if (yearExists == 0)
 	{
 		printf("No data about movies released in the year %d\n", input);
@@ -182,51 +188,65 @@ void runYear(struct movie *list)
 
 void runHighRate(struct movie *list)
 {
+	//returns a sorted linked list of movies by year
 	bubbleSort(list);
 
+	//struct to print the top movies for a given year
 	struct printList{
 		int year;
 		char *name;
 		int rating;
 
 	};
-
 	struct printList print[50];
-	int currentYear = 0;
-	int previousYear = 0;
-	int i=0;
-	int year = 0;
-	int numMovies;
+
+	int currentYear = 0, previousYear = 0, i=0, year = 0, numMovies;
+	
+	//loop through the entire linked list
 	while(list != NULL){
 		currentYear = list->year;
+		/*********
+		 * If were still at the same year then we know we have to compare
+		 * the ratings against each other
+		 * *******/
 		if(currentYear == previousYear){
 			if(list->rating > print[i].rating){
 				year++;
+
 				print[i].year = list->year;
 				print[i].name = list->title;
 				print[i].rating = list->rating;
+
 			}
 			else{
 				year--;
 			}
 		}
 		else{
+			/**********
+			 * If were at a new year, print the previous year as long as its not the first
+			 * *******/
+
+			if(i != 0){
+				if(print[i-1].year < 2020 && print[i-1].year > 1900){
+					printf("%d %d %s\n", print[i-1].year, print[i-1].rating, print[i-1].name);
+				}
+			}
+			/*****
+			 * Once we print the previous year
+			 * now move onto the next item in the list
+			 * ***/
+
 			year++;
 			print[i].year = list->year;
 			print[i].name = list->title;
-			print[i].rating = list->rating;                
-
+			print[i].rating = list->rating; 
 		}
 
 		previousYear = currentYear;
 		i++;
 		numMovies = year;
 		list = list->next;
-	}
-	printf("%d\n", numMovies);
-	int j;
-	for(int j = 0; j <= numMovies; j++){
-		printf("%d %d %s\n", print[j].year, print[j].rating, print[j].name);
 	}
 }
 
@@ -347,6 +367,5 @@ int main(int argc, char *argv[])
 	struct movie *list = processFile(argv[1]);
 	printSucess(list, argv[1]);
 	runMenu(list);
-	// printMovieList(list);
 	return EXIT_SUCCESS;
 }
